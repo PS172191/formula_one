@@ -25,7 +25,7 @@ const Navbar = () => {
               />
             </div>
 
-            {/* Desktop Menu (Centered on larger screens) */}
+            {/* Desktop Menu */}
             <div className="hidden md:flex absolute md:static md:justify-center items-center text-white text-2xl">
               <a
                 href="/"
@@ -44,7 +44,7 @@ const Navbar = () => {
               </a>
             </div>
 
-            {/* Mobile Menu Button (On the right in mobile view) */}
+            {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center justify-end flex-grow">
               <button
                 onClick={toggleMenu}

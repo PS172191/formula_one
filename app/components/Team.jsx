@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const Round = () => {
+const Team = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,6 +12,7 @@ const Round = () => {
   // Get the current year dynamically
   const currentYear = new Date().getFullYear();
 
+  // Function to handle season change
   const SeasonChange = (event) => {
     setSeason(event.target.value); // Update the season value based on the user's selection
   };
@@ -20,10 +21,14 @@ const Round = () => {
     const selectedSeason = season === "Current" ? currentYear : season;
 
     setLoading(true); // Set loading to true when season changes
-    fetch(`https://ergast.com/api/f1/${selectedSeason}.json`) // Fetch data for the selected season
+    fetch(
+      `https://ergast.com/api/f1/${selectedSeason}/constructorStandings.json`
+    ) // Fetch data for the selected season (or current year)
       .then((response) => response.json())
       .then((data) => {
-        setData(data.MRData.RaceTable.Races);
+        setData(
+          data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings
+        ); // Correct data path
         setLoading(false);
       })
       .catch((error) => {
@@ -41,7 +46,7 @@ const Round = () => {
       <div className="mx-5 my-5 border-2 border-b-0 border-l-0 border-t-black border-r-black rounded-tr-lg flex items-center">
         {/* Show actual year instead of 'Current' */}
         <label className="font-bruno text-2xl">
-          {season === "Current" ? currentYear : season} Formula 1 Season
+          {season === "Current" ? currentYear : season} Formula 1 Teams
         </label>
       </div>
 
@@ -71,38 +76,42 @@ const Round = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {/* Render race data */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Render team data */}
         {data &&
-          data.map((race, index) => {
-            const country = race.Circuit.Location.country;
-
+          data.map((team, index) => {
+            const name = team.Constructor.name;
             return (
               <div
                 key={index}
-                className="bg-secondary my-p10 mx-p10 p-p10 text-white text-xs rounded-tr-lg font-raleway"
+                className="bg-secondary mb-5 mx-5 px-p10 py-p10 text-white rounded-tr-lg font-raleway"
               >
-                <div className="flex flex-row justify-between font-bold">
-                  <div className="flex flex-col pb-px10">
-                    <label>Round: {race.round}</label>
-                    <label className="py-1">{race.date}</label>
-                  </div>
-                  <div className="items-center">
-                    <Image
-                      src={`/images/flags/${country}.png`}
-                      alt={`Country flag for ${country}`}
-                      width={100}
-                      height={100}
-                      className="rounded-md h-6 w-10"
-                    />
-                  </div>
+                <div className="flex flex-row justify-between items-center font-bold">
+                  <h1 className="text-2xl">{team.position}</h1>
+                  <label className="text-base py-1">{team.points} points</label>
                 </div>
-                <hr className="text-white my-1"></hr>
-                <div className="flex flex-col">
-                  <label className="font-bold">
-                    {race.Circuit.circuitName}
-                  </label>
-                  <label className="py-1">{race.raceName}</label>
+                <hr className="text-white my-2"></hr>
+                <div className="flex flex-row justify-between">
+                  <label className="text-lg font-bold">{name}</label>
+                  <Image
+                    priority={true}
+                    src={`/images/teams/${name}.png`}
+                    alt={`Team picture for ${name}`}
+                    width={100}
+                    height={100}
+                    className="w-auto h-7"
+                  />
+                </div>
+                <hr className="text-white my-2"></hr>
+                <div>
+                  <Image
+                    priority={true}
+                    src={`/images/cars/${name}.svg`}
+                    alt={`Car picture for ${name}`}
+                    width={100}
+                    height={100}
+                    className="w-full"
+                  />
                 </div>
               </div>
             );
@@ -112,4 +121,4 @@ const Round = () => {
   );
 };
 
-export default Round;
+export default Team;

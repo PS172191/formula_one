@@ -1,9 +1,10 @@
-"use client";
+"use client"; // Ensures the component is client-rendered for UseState and UseEffect hooks
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react"; // Import React hooks
+import Image from "next/image"; // Import Image component for optimized images
 
 const Driver = () => {
+  // Define component state with React's useState hook
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,28 +13,29 @@ const Driver = () => {
   // Get the current year dynamically
   const currentYear = new Date().getFullYear();
 
-  // Function to handle season change
+  // Handles season selection from dropdown
   const SeasonChange = (event) => {
-    setSeason(event.target.value); // Update the season value based on the user's selection
+    setSeason(event.target.value);
   };
 
+  // Fetch data when season or current year changes
   useEffect(() => {
     const selectedSeason = season === "Current" ? currentYear : season;
 
-    setLoading(true); // Set loading to true when season changes
-    fetch(`https://ergast.com/api/f1/${selectedSeason}/driverStandings.json`) // Fetch data for the selected season (or current year)
-      .then((response) => response.json())
+    setLoading(true); // Activates loading state
+    fetch(`https://ergast.com/api/f1/${selectedSeason}/driverStandings.json`) // Fetch data for the selected season
+      .then((response) => response.json()) // Parse response to JSON
       .then((data) => {
-        setData(data.MRData.StandingsTable.StandingsLists[0].DriverStandings); // Correct data path
+        setData(data.MRData.StandingsTable.StandingsLists[0].DriverStandings); // API path
         setLoading(false);
       })
       .catch((error) => {
-        setError(error);
+        setError(error); // Catch errors during fetch
         setLoading(false);
       });
-  }, [season, currentYear]); // Re-run useEffect when season or current year changes
+  }, [season, currentYear]); // Reruns this effect when season changes
 
-  // Helper function to get the appropriate flag based on nationality
+  // Helper function to get flag image based on driver nationality
   const getFlagImage = (nationality) => {
     switch (nationality) {
       case "Dutch":
@@ -68,28 +70,35 @@ const Driver = () => {
         return "/images/flags/usa.png";
       case "Argentinian ":
         return "/images/flags/argentina.png";
+      case "New Zealander":
+        return "/images/flags/new zealand.png";
+      case "Italian":
+        return "/images/flags/italy.png";
+      case "Polish":
+        return "/images/flags/poland.png";
+      case "Russian":
+        return "/images/flags/russia.png";
       default:
         return `/images/flags/${nationality}.png`;
     }
   };
 
+  // Displays loading or error messages if applicable
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data</p>;
 
   return (
     <div>
-      {/* Dynamic season label */}
       <div className="mx-5 my-5 border-2 border-b-0 border-l-0 border-t-black border-r-black rounded-tr-lg flex items-center">
-        {/* Show actual year instead of 'Current' */}
         <label className="font-bruno text-2xl">
-          {season === "Current" ? currentYear : season} Formula 1 Drivers
+          {season === "Current" ? currentYear : season} Formula 1 Drivers{" "}
         </label>
       </div>
 
       {/* Season selection dropdown */}
       <div className="font-raleway my-5">
-        <label htmlFor="season-select" className="ml-5 text-base">
-          Select Season:{" "}
+        <label htmlFor="season-select" className="mx-p10 text-base">
+          Select Season:
         </label>
         <select
           id="season-select"
@@ -112,61 +121,65 @@ const Driver = () => {
         </select>
       </div>
 
-      {/* Render driver data */}
-      {data &&
-        data.map((driver, index) => {
-          const nationality = driver.Driver.nationality;
-          const team = driver.Constructors[0].name;
-          const givenName = driver.Driver.givenName; // First name
-          const familyName = driver.Driver.familyName; // Last name
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Check if data is available before mapping */}
+        {data &&
+          data.map((driver, index) => {
+            const nationality = driver.Driver.nationality;
+            const team = driver.Constructors[0].name; // team name
+            const givenName = driver.Driver.givenName; // first name
+            const familyName = driver.Driver.familyName; // last name
 
-          return (
-            <div
-              key={index}
-              className="bg-secondary mb-5 mx-5 px-p10 py-p10 text-white rounded-tr-lg font-raleway"
-            >
-              <div className="flex flex-row justify-between items-center font-bold">
-                <h1 className="text-2xl">{driver.position}</h1>
-                <label className="text-base py-1">{driver.points} points</label>
-              </div>
-              <hr className="text-white my-2"></hr>
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-col">
-                  <label>{givenName}</label>
-                  <label className="font-bold">{familyName}</label>
+            return (
+              <div
+                key={index}
+                className="bg-secondary mb-5 mx-5 px-p10 py-p10 text-white rounded-tr-lg font-raleway"
+              >
+                <div className="flex flex-row justify-between items-center font-bold">
+                  <h1 className="text-2xl">{driver.position}</h1>
+                  <label className="text-base py-1">
+                    {driver.points} points
+                  </label>
                 </div>
-                <Image
-                  src={getFlagImage(nationality)}
-                  alt={`Country flag for ${nationality}`}
-                  width={100}
-                  height={100}
-                  className="rounded-md h-6 w-10"
-                />
-              </div>
-              <hr className="text-white my-2"></hr>
-              <div className="flex flex-row justify-between">
-                <div className="flex flex-col justify-around">
-                  <label>{team}</label>
+                <hr className="text-white my-2"></hr>
+                <div className="flex flex-row justify-between items-center">
+                  <div className="flex flex-col">
+                    <label>{givenName}</label>
+                    <label className="font-bold">{familyName}</label>{" "}
+                  </div>
                   <Image
-                    src={`/images/teams/${team}.png`}
-                    alt={`Team logo for ${team}`}
+                    src={getFlagImage(nationality)}
+                    alt={`Country flag for ${nationality}`}
                     width={100}
                     height={100}
-                    className="h-auto w-20"
+                    className="rounded-md h-6 w-10"
                   />
                 </div>
-                <Image
-                  priority={true}
-                  src={`/images/drivers/${givenName}_${familyName}.png`}
-                  alt={`Driver picture for ${givenName} ${familyName}`}
-                  width={100}
-                  height={100}
-                  className="w-auto h-36"
-                />
+                <hr className="text-white my-2"></hr>
+                <div className="flex flex-row justify-between">
+                  <div className="flex flex-col justify-around">
+                    <label>{team}</label>
+                    <Image
+                      src={`/images/teams/${team}.png`}
+                      alt={`Team logo for ${team}`}
+                      width={100}
+                      height={100}
+                      className="w-24 h-auto"
+                    />
+                  </div>
+                  <Image
+                    priority={true}
+                    src={`/images/drivers/${givenName}_${familyName}.png`}
+                    alt={`Driver picture for ${givenName} ${familyName}`}
+                    width={100}
+                    height={100}
+                    className="w-auto h-36"
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+      </div>
     </div>
   );
 };

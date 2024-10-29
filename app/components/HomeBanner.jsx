@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const HomeBanner = () => {
   return (
-    <div className="font-raleway font-bold text-white bg-secondary h-52 flex flex-col justify-center items-center mt-8">
+    <div className="font-raleway font-bold text-white bg-secondary h-52 flex flex-col justify-center items-center mt-8 w-full">
       <Image
         src={`/images/f1-logo-red.png`}
         alt={`red f1 logo`}

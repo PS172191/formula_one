@@ -2,7 +2,7 @@
 
 const InfoTab = () => {
   return (
-    <div className="bg-primary font-raleway font-bold text-base text-black w-96 rounded-tr-lg rounded-br-lg mt-5 p-5">
+    <div className="bg-primary font-raleway font-bold text-base text-black w-96 rounded-tr-lg rounded-br-lg mt-5 p-5 sm:justify-self-center sm:rounded-lg sm:w-4/5">
       <h1>
         Welcome to my F1 Information app!
         <br />
